@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плоскость Гранитум</title>
+    
+    <style>
+        /* ============================================
+           СБРОС СТИЛЕЙ И БАЗОВЫЕ НАСТРОЙКИ
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Calibri', 'Arial', 'Helvetica', sans-serif;
+            line-height: 1.6;
+            color: #ffffff;
+            background-color: #313840;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ============================================
+           ФОНОВОЕ ИЗОБРАЖЕНИЕ
+           ============================================ */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .background img {
+            width: 100%;
+            height: 100%;
+            min-height: 100vh;
+            object-fit: cover;
+            object-position: center top;
+            filter: brightness(0.4) blur(2px);
+            display: block;
+        }
+
+        /* ============================================
+           КНОПКА УПРАВЛЕНИЯ ФОНОВОЙ МУЗЫКОЙ
+           ============================================ */
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .music-control:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .music-control:active {
+            transform: translateY(0);
+        }
+
+        .music-control .icon {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .music-control .text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+
+        /* ============================================
+           ОСНОВНОЙ КОНТЕЙНЕР
+           ============================================ */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 20px 60px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================
+           ЗАГОЛОВОК МИРА
+           ============================================ */
+        .world-header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 20px;
+        }
+
+        .world-title {
+            font-size: 4rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            color: #ffffff;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 215, 0, 0.3);
+            margin-bottom: 20px;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% {
+                text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 215, 0, 0.2);
+            }
+            100% {
+                text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.5);
+            }
+        }
+
+        .title-decoration {
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            margin: 0 auto;
+            border-radius: 2px;
+        }
+
+        /* ============================================
+           СЕКЦИИ (БЛОКИ)
+           ============================================ */
+        .block {
+            margin-bottom: 80px;
+            padding: 20px 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            transition: transform 0.3s ease;
+        }
+
+        .block h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .block h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            border-radius: 2px;
+        }
+
+        /* ============================================
+           ГАЛЕРЕЯ (СЕТКА ИЗОБРАЖЕНИЙ)
+           ============================================ */
+        .gallery {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .gallery::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .gallery::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .gallery::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 3px;
+        }
+
+        .gallery::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.8);
+        }
+
+        /* ============================================
+           ЭЛЕМЕНТ ГАЛЕРЕИ
+           ============================================ */
+        .gallery-item {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            flex-shrink: 0;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            border: none;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .gallery-item:active {
+            transform: translateY(-5px) scale(1.01);
+        }
+
+        .gallery-item.playing {
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 15px 35px rgba(0, 0, 0, 0.5);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 0 15px 35px rgba(0, 0, 0, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 15px 35px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.5s ease;
+            border: none;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        /* ============================================
+           ИНДИКАТОР ВОСПРОИЗВЕДЕНИЯ
+           ============================================ */
+        .gallery-item::before {
+            content: '🔊';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 3rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 10;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .gallery-item.playing::before {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            animation: soundWave 1s ease-in-out infinite;
+        }
+
+        @keyframes soundWave {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+        }
+
+        /* ============================================
+           БЛОК СКАЗКИ
+           ============================================ */
+        #story {
+            margin-bottom: 60px;
+        }
+
+        .story-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .story-text {
+            width: 100%;
+            max-width: 900px;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.4);
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            line-height: 2;
+            text-align: justify;
+            color: #f0f0f0;
+            max-height: 500px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .story-text::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .story-text::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .story-text::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 4px;
+        }
+
+        .story-text::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.8);
+        }
+
+        .story-text p {
+            margin-bottom: 20px;
+            text-indent: 40px;
+        }
+
+        /* ============================================
+           КНОПКА ДИАЛОГА
+           ============================================ */
+        .dialog-button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 35px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dialog-button:hover {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.5), rgba(255, 165, 0, 0.5));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .dialog-button:active {
+            transform: translateY(-1px);
+        }
+
+        .dialog-button.playing {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.6), rgba(255, 165, 0, 0.6));
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), 0 8px 25px rgba(0, 0, 0, 0.4);
+            animation: buttonPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), 0 8px 25px rgba(0, 0, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 8px 25px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        .dialog-button .icon {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .dialog-button .text {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #ffffff;
+        }
+
+        /* ============================================
+           АДАПТИВНЫЙ ДИЗАЙН
+           ============================================ */
+
+        /* Планшеты */
+        @media screen and (max-width: 1024px) {
+            .container {
+                padding: 80px 15px 40px 15px;
+            }
+
+            .block {
+                margin-bottom: 60px;
+            }
+
+            .block h2 {
+                font-size: 2rem;
+            }
+
+            .gallery {
+                gap: 20px;
+            }
+
+            .gallery-item {
+                width: 180px;
+                height: 180px;
+            }
+
+            .story-text {
+                font-size: 1.1rem;
+                padding: 30px;
+            }
+        }
+
+        /* Мобильные устройства */
+        @media screen and (max-width: 768px) {
+            .music-control {
+                top: 10px;
+                right: 10px;
+                padding: 10px 15px;
+            }
+
+            .music-control .text {
+                display: none;
+            }
+
+            .music-control .icon {
+                font-size: 1.8rem;
+            }
+
+            .container {
+                padding: 70px 10px 30px 10px;
+            }
+
+            .block {
+                margin-bottom: 40px;
+            }
+
+            .block h2 {
+                font-size: 1.6rem;
+                margin-bottom: 20px;
+                letter-spacing: 2px;
+            }
+
+            .gallery {
+                gap: 15px;
+            }
+
+            .gallery-item {
+                width: 150px;
+                height: 150px;
+            }
+
+            .gallery-item::before {
+                font-size: 2rem;
+            }
+
+            .story-text {
+                font-size: 1rem;
+                line-height: 1.8;
+                padding: 20px;
+                max-height: 400px;
+            }
+
+            .story-text p {
+                text-indent: 20px;
+                margin-bottom: 15px;
+            }
+
+            .dialog-button {
+                padding: 12px 25px;
+            }
+
+            .dialog-button .text {
+                font-size: 0.9rem;
+            }
+
+            .world-title {
+                font-size: 2.5rem;
+                letter-spacing: 4px;
+            }
+
+            .title-decoration {
+                width: 150px;
+            }
+        }
+
+        /* Маленькие мобильные устройства */
+        @media screen and (max-width: 480px) {
+            .gallery {
+                gap: 10px;
+            }
+
+            .gallery-item {
+                width: 120px;
+                height: 120px;
+            }
+
+            .block h2 {
+                font-size: 1.4rem;
+            }
+
+            .story-text {
+                font-size: 0.95rem;
+                padding: 15px;
+            }
+
+            .world-title {
+                font-size: 1.8rem;
+                letter-spacing: 3px;
+            }
+
+            .title-decoration {
+                width: 100px;
+            }
+        }
+
+        /* ============================================
+           ДОСТУПНОСТЬ
+           ============================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
+        /* ============================================
+           ПРИНУДИТЕЛЬНАЯ ПРОКРУТКА
+           ============================================ */
+        .story-text {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 215, 0, 0.5) rgba(255, 255, 255, 0.1);
+        }
+
+        /* ============================================
+           ЗАГРУЗКА ИЗОБРАЖЕНИЙ
+           ============================================ */
+        .gallery-item img {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        }
+
+        .gallery-item img[src=""] {
+            opacity: 0.5;
+        }
+
+        /* ============================================
+           СОСТОЯНИЕ ЗАГРУЗКИ
+           ============================================ */
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spinner 1s linear infinite;
+        }
+
+        @keyframes spinner {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* ============================================
+           ФОКУС ДЛЯ ДОСТУПНОСТИ
+           ============================================ */
+        button:focus,
+        .gallery-item:focus {
+            outline: 3px solid #ffd700;
+            outline-offset: 3px;
+        }
+
+        button:focus:not(:focus-visible),
+        .gallery-item:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        button:focus-visible,
+        .gallery-item:focus-visible {
+            outline: 3px solid #ffd700;
+            outline-offset: 3px;
+        }
+
+        /* ============================================
+           ТЕМНАЯ ТЕМА (ПРИ ПОДДЕРЖКЕ БРАУЗЕРОМ)
+           ============================================ */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #313840;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .background img {
+                filter: brightness(0.6) blur(2px);
+            }
+        }
+
+        /* ============================================
+           СОСТОЯНИЕ КНОПОК ПРИ ВОСПРОИЗВЕДЕНИИ
+           ============================================ */
+        .music-control.playing,
+        .dialog-button.playing {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.5), rgba(255, 165, 0, 0.5));
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), 0 8px 25px rgba(0, 0, 0, 0.4);
+            animation: buttonPulse 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Фоновое изображение -->
+    <div class="background">
+        <img src="https://anniebishkar-boop.github.io/lore/Fon.jpeg" alt="Background">
+    </div>
+
+    <!-- Кнопка остановки фоновой музыки (правый верхний угол) -->
+    <button class="music-control" id="bgMusicToggle">
+        <span class="text">Музыка</span>
+    </button>
+
+    <!-- Фоновая музыка -->
+    <audio id="bgMusic" loop autoplay playsinline preload="auto">
+        <source src="https://anniebishkar-boop.github.io/lore/Fon.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Основной контейнер -->
+    <main class="container">
+        
+        <!-- Заголовок мира -->
+        <header class="world-header">
+            <h1 class="world-title">Плоскость Гранитум</h1>
+            <div class="title-decoration"></div>
+        </header>
+
+        <!-- Блок 1: Локации -->
+        <section class="block" id="locations">
+            <h2>Локации</h2>
+            <div class="gallery">
+                <div class="gallery-item" data-name="L1">
+                    <img src="https://anniebishkar-boop.github.io/lore/L1.jpeg" alt="Локация 1">
+                    <audio src="https://anniebishkar-boop.github.io/lore/L1.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="L2">
+                    <img src="https://anniebishkar-boop.github.io/lore/L2.jpeg" alt="Локация 2">
+                    <audio src="https://anniebishkar-boop.github.io/lore/L2.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="L3">
+                    <img src="https://anniebishkar-boop.github.io/lore/L3.jpeg" alt="Локация 3">
+                    <audio src="https://anniebishkar-boop.github.io/lore/L3.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="L4">
+                    <img src="https://anniebishkar-boop.github.io/lore/L4.jpeg" alt="Локация 4">
+                    <audio src="https://anniebishkar-boop.github.io/lore/L4.mp3" preload="auto"></audio>
+                </div>
+            </div>
+        </section>
+
+        <!-- Блок 2: Материалы -->
+        <section class="block" id="materials">
+            <h2>Материалы</h2>
+            <div class="gallery">
+                <div class="gallery-item" data-name="M1">
+                    <img src="https://anniebishkar-boop.github.io/lore/M1.jpeg" alt="Материал 1">
+                    <audio src="https://anniebishkar-boop.github.io/lore/M1.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="M2">
+                    <img src="https://anniebishkar-boop.github.io/lore/M2.jpeg" alt="Материал 2">
+                    <audio src="https://anniebishkar-boop.github.io/lore/M2.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="M3">
+                    <img src="https://anniebishkar-boop.github.io/lore/M3.jpeg" alt="Материал 3">
+                    <audio src="https://anniebishkar-boop.github.io/lore/M3.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="M4">
+                    <img src="https://anniebishkar-boop.github.io/lore/M4.jpeg" alt="Материал 4">
+                    <audio src="https://anniebishkar-boop.github.io/lore/M4.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="M5">
+                    <img src="https://anniebishkar-boop.github.io/lore/M5.jpeg" alt="Материал 5">
+                    <audio src="https://anniebishkar-boop.github.io/lore/M5.mp3" preload="auto"></audio>
+                </div>
+            </div>
+        </section>
+
+        <!-- Блок 3: Энергия -->
+        <section class="block" id="energy">
+            <h2>Энергия</h2>
+            <div class="gallery">
+                <div class="gallery-item" data-name="E1">
+                    <img src="https://anniebishkar-boop.github.io/lore/E1.jpeg" alt="Энергия 1">
+                    <audio src="https://anniebishkar-boop.github.io/lore/E1.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="E2">
+                    <img src="https://anniebishkar-boop.github.io/lore/E2.jpeg" alt="Энергия 2">
+                    <audio src="https://anniebishkar-boop.github.io/lore/E2.mp3" preload="auto"></audio>
+                </div>
+            </div>
+        </section>
+
+        <!-- Блок 4: Персонажи -->
+        <section class="block" id="characters">
+            <h2>Персонажи</h2>
+            <div class="gallery">
+                <div class="gallery-item" data-name="P1">
+                    <img src="https://anniebishkar-boop.github.io/lore/P1.jpeg" alt="Персонаж 1">
+                    <audio src="https://anniebishkar-boop.github.io/lore/P1.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="P2">
+                    <img src="https://anniebishkar-boop.github.io/lore/P2.jpeg" alt="Персонаж 2">
+                    <audio src="https://anniebishkar-boop.github.io/lore/P2.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="P3">
+                    <img src="https://anniebishkar-boop.github.io/lore/P3.jpeg" alt="Персонаж 3">
+                    <audio src="https://anniebishkar-boop.github.io/lore/P3.mp3" preload="auto"></audio>
+                </div>
+                <div class="gallery-item" data-name="P4">
+                    <img src="https://anniebishkar-boop.github.io/lore/P4.jpeg" alt="Персонаж 4">
+                    <audio src="https://anniebishkar-boop.github.io/lore/P4.mp3" preload="auto"></audio>
+                </div>
+            </div>
+        </section>
+
+        <!-- Блок 5: Сказка -->
+        <section class="block" id="story">
+            <h2>Сказка</h2>
+            <div class="story-container">
+                <div class="story-text" id="storyText">
+                    Загрузка сказки...
+                </div>
+                <button class="dialog-button" id="dialogToggle">
+                    <span class="text">Диалог</span>
+                </button>
+            </div>
+            <!-- Диалог аудио -->
+            <audio id="dialogAudio" preload="auto">
+                <source src="https://anniebishkar-boop.github.io/lore/Dialog.mp3" type="audio/mpeg">
+            </audio>
+        </section>
+
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        /* ============================================
+           ПЕРЕМЕННЫЕ И КОНСТАНТЫ
+           ============================================ */
+        const BASE_URL = 'https://anniebishkar-boop.github.io/lore/';
+
+        // Элементы управления фоновой музыкой
+        const bgMusic = document.getElementById('bgMusic');
+        const bgMusicToggle = document.getElementById('bgMusicToggle');
+        const bgMusicText = bgMusicToggle.querySelector('.text');
+
+        // Элементы управления диалогом
+        const dialogAudio = document.getElementById('dialogAudio');
+        const dialogToggle = document.getElementById('dialogToggle');
+        const dialogText = dialogToggle.querySelector('.text');
+
+        // Элемент для текста сказки
+        const storyText = document.getElementById('storyText');
+
+        // Все элементы галереи
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        // Отслеживание текущего воспроизводимого аудио
+        let currentPlayingItem = null;
+        let currentPlayingAudio = null;
+
+        // Флаг первого взаимодействия пользователя
+        let userInteracted = false;
+
+        /* ============================================
+           ФОНОВАЯ МУЗЫКА
+           ============================================ */
+
+        // Функция запуска фоновой музыки
+        function playBackgroundMusic() {
+            if (bgMusic.paused) {
+                bgMusic.volume = 0.5;
+                bgMusic.play().then(() => {
+                    updateMusicButtonState(true);
+                    console.log('✅ Фоновая музыка запущена');
+                }).catch(error => {
+                    console.log('⚠️ Автовоспроизведение заблокировано браузером:', error);
+                    updateMusicButtonState(false);
+                });
+            }
+        }
+
+        // Функция остановки фоновой музыки
+        function stopBackgroundMusic() {
+            bgMusic.pause();
+            updateMusicButtonState(false);
+            console.log('⏹️ Фоновая музыка остановлена');
+        }
+
+        // Попытка запуска при загрузке страницы
+        window.addEventListener('load', () => {
+            console.log('📄 Страница загружена');
+            
+            // Устанавливаем громкость
+            bgMusic.volume = 0.5;
+            dialogAudio.volume = 0.8;
+            
+            // Пытаемся запустить фоновую музыку сразу
+            playBackgroundMusic();
+            
+            // Загружаем текст сказки
+            loadStoryText();
+        });
+
+        // Запуск музыки при первом клике в любом месте страницы (если не запустилась автоматически)
+        document.addEventListener('click', () => {
+            if (!userInteracted) {
+                userInteracted = true;
+                if (bgMusic.paused) {
+                    playBackgroundMusic();
+                }
+                console.log('👆 Первое взаимодействие пользователя');
+            }
+        }, { once: true });
+
+        // Запуск музыки при первом касании (для мобильных)
+        document.addEventListener('touchstart', () => {
+            if (!userInteracted) {
+                userInteracted = true;
+                if (bgMusic.paused) {
+                    playBackgroundMusic();
+                }
+                console.log('👆 Первое касание пользователя');
+            }
+        }, { once: true });
+
+        // Обработчик кнопки фоновой музыки
+        bgMusicToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (bgMusic.paused) {
+                playBackgroundMusic();
+            } else {
+                stopBackgroundMusic();
+            }
+        });
+
+        // Обновление состояния кнопки фоновой музыки
+        function updateMusicButtonState(isPlaying) {
+            if (isPlaying) {
+                bgMusicText.textContent = 'Музыка ♫';
+                bgMusicToggle.classList.add('playing');
+            } else {
+                bgMusicText.textContent = 'Музыка';
+                bgMusicToggle.classList.remove('playing');
+            }
+        }
+
+        /* ============================================
+           ЗАГРУЗКА ТЕКСТА СКАЗКИ
+           ============================================ */
+
+        async function loadStoryText() {
+            try {
+                // Добавляем timestamp чтобы избежать кэширования
+                const version = new Date().getTime();
+                const response = await fetch(BASE_URL + 'Skazka.txt?v=' + version);
+                
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить сказку');
+                }
+                
+                const text = await response.text();
+                
+                // Разбиваем по строкам: одна строка = один абзац
+                const lines = text.split('\n').filter(line => line.trim().length > 0);
+                storyText.innerHTML = lines.map(line => `<p>${line.trim()}</p>`).join('');
+                
+                console.log('📖 Сказка загружена:', lines.length, 'абзацев');
+                
+            } catch (error) {
+                console.error('❌ Ошибка загрузки сказки:', error);
+                storyText.innerHTML = '<p>Не удалось загрузить текст сказки. Пожалуйста, проверьте файл Skazka.txt</p>';
+            }
+        }
+
+        /* ============================================
+           УПРАВЛЕНИЕ ДИАЛОГОМ
+           ============================================ */
+
+        dialogToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            
+            if (dialogAudio.paused) {
+                // Останавливаем фоновую музыку на время диалога
+                if (!bgMusic.paused) {
+                    bgMusic.pause();
+                    updateMusicButtonState(false);
+                }
+                
+                // Останавливаем другие аудио из галереи
+                stopAllGalleryAudio();
+                
+                // Запускаем диалог
+                dialogAudio.volume = 0.8;
+                dialogAudio.play().then(() => {
+                    updateDialogButtonState(true);
+                    console.log('🎭 Диалог запущен');
+                }).catch(error => {
+                    console.error('❌ Ошибка запуска диалога:', error);
+                });
+            } else {
+                dialogAudio.pause();
+                dialogAudio.currentTime = 0;
+                updateDialogButtonState(false);
+                
+                // Возобновляем фоновую музыку
+                playBackgroundMusic();
+            }
+        });
+
+        // Обновление состояния кнопки диалога
+        function updateDialogButtonState(isPlaying) {
+            if (isPlaying) {
+                dialogText.textContent = 'Диалог ♫';
+                dialogToggle.classList.add('playing');
+            } else {
+                dialogText.textContent = 'Диалог';
+                dialogToggle.classList.remove('playing');
+            }
+        }
+
+        // Когда диалог заканчивается, возобновляем фоновую музыку
+        dialogAudio.addEventListener('ended', () => {
+            console.log('🎭 Диалог завершён');
+            updateDialogButtonState(false);
+            playBackgroundMusic();
+        });
+
+        /* ============================================
+           УПРАВЛЕНИЕ ГАЛЕРЕЕЙ
+           ============================================ */
+
+        galleryItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                const itemName = item.dataset.name;
+                const audio = item.querySelector('audio');
+                
+                console.log('🖼️ Клик по картинке:', itemName);
+                
+                if (currentPlayingItem === item && !audio.paused) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    item.classList.remove('playing');
+                    currentPlayingItem = null;
+                    currentPlayingAudio = null;
+                    
+                    playBackgroundMusic();
+                    
+                    console.log('⏹️ Аудио остановлено:', itemName);
+                } else {
+                    stopAllGalleryAudio();
+                    
+                    if (!dialogAudio.paused) {
+                        dialogAudio.pause();
+                        dialogAudio.currentTime = 0;
+                        updateDialogButtonState(false);
+                    }
+                    
+                    stopBackgroundMusic();
+                    
+                    audio.volume = 0.8;
+                    audio.play().then(() => {
+                        item.classList.add('playing');
+                        currentPlayingItem = item;
+                        currentPlayingAudio = audio;
+                        console.log('▶️ Аудио запущено:', itemName);
+                    }).catch(error => {
+                        console.error('❌ Ошибка запуска аудио:', itemName, error);
+                        item.classList.remove('playing');
+                    });
+                }
+            });
+        });
+
+        function stopAllGalleryAudio() {
+            galleryItems.forEach(item => {
+                const audio = item.querySelector('audio');
+                if (audio) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+                item.classList.remove('playing');
+            });
+            currentPlayingItem = null;
+            currentPlayingAudio = null;
+            console.log('⏹️ Все аудио галереи остановлены');
+        }
+
+        galleryItems.forEach(item => {
+            const audio = item.querySelector('audio');
+            
+            if (audio) {
+                audio.addEventListener('ended', () => {
+                    console.log('⏹️ Аудио завершено:', item.dataset.name);
+                    item.classList.remove('playing');
+                    currentPlayingItem = null;
+                    currentPlayingAudio = null;
+                    
+                    playBackgroundMusic();
+                });
+                
+                audio.addEventListener('error', (e) => {
+                    console.error('❌ Ошибка загрузки аудио:', audio.src);
+                    item.classList.remove('playing');
+                    item.style.cursor = 'not-allowed';
+                    item.title = 'Аудио файл не найден';
+                });
+            }
+        });
+
+        /* ============================================
+           ЛОГИРОВАНИЕ
+           ============================================ */
+
+        console.log('========================================');
+        console.log('🌍 Сайт "Плоскость Гранитум" загружен');
+        console.log('========================================');
+        console.log('📁 Базовый URL:', BASE_URL);
+        console.log('🎼 Фоновая музыка:', bgMusic.querySelector('source').src);
+        console.log('📖 Сказка:', BASE_URL + 'Skazka.txt');
+        console.log('🎭 Диалог:', dialogAudio.querySelector('source').src);
+        console.log('🖼️ Элементов галереи:', galleryItems.length);
+        console.log('========================================');
+    </script>
+</body>
+</html>
